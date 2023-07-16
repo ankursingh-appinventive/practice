@@ -1,0 +1,25 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "one to one chat application",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemone server.js"
+  },
+  "keywords": [
+    "node",
+    "postgres",
+    "express"
+  ],
+  "author": "Ankur Singh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.32.1",
+    "swagger-jsdoc": "^6.0.0",
+    "swagger-ui-express": "^5.0.0"
+  }
+}
