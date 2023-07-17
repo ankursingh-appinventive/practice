@@ -1,0 +1,82 @@
+Embedded Document 
+1. Insertion
+db.users.insertOne({
+  name: "ankur",
+  address: {
+    street: "ghj",
+    city: "varanasi",
+    state: "UP",
+  },
+});
+
+2.push,pull,pullAll,$Elementmatch 
+
+db.users.updateOne({
+  name: "ankur",
+}, {
+  $push: {
+    address: {
+      phone: "1234567890",
+    },
+  },
+});
+db.users.updateOne({
+  name: "ankur",
+}, {
+  $pull: {
+    address: {
+      phone: "1234567890",
+    },
+  },
+});
+db.users.updateOne({
+  name: "ankur",
+}, {
+  $pullAll: {
+    address: {
+      phone: ["1234547890", "0987654321"],
+    },
+  },
+});
+db.users.updateOne({
+  name: "ankur",
+}, {
+  $pullAll: {
+    address: {
+      phone: {
+        $nin: phoneNumbers,
+      },
+    },
+  },
+});
+
+3. update many usingfilter
+db.users.updateMany({
+  name: "ankur",
+  address: {
+    city: "delhi",
+  },
+}, {
+  $set: {
+    address: {
+      state: "delhi",
+    },
+  },
+});
+
+4. increment document
+db.users.updateOne({
+  name: "ankur",
+}, {
+  $inc: {
+    age: 23,
+  },
+});
+5. $exist
+
+db.users.findOne({
+  name: "ankur",
+  $exists: {
+    address: true,
+  },
+});
