@@ -1,4 +1,8 @@
 import {User} from '../models/userMod'
+
+import {Session} from '../models/sessionMod' //....................................
+import redisclient from '../redis/redis' //................................................
+
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -42,9 +46,18 @@ const register =async (req:any, res:any, next:any) =>{
         phone:phone,
         password: hashedPass
     })
+//...................................................
+    const session = await Session.create({
+        userID : result._id,
+        isActive : true,
+        deviceID: req.body.deviceID        
+    })
+
+    await redisclient.set(`status:${result._id}`,'true');
+//...................................................    
 
     const token = jwt.sign({email: result.email, id:result._id}, SEC_KEY, {expiresIn: '1h'});
-    res.status(200).json({user: result, token: token});
+    res.status(200).json({user: result, token: token, Session: session});
 
     } catch (error) {
         console.log(error)
@@ -54,14 +67,19 @@ const register =async (req:any, res:any, next:any) =>{
 
 
 
-const login = (req:any, res:any, next:any) =>{
+const login = async (req:any, res:any, next:any) =>{
     const username = req.body.username
     const password = req.body.password
 
-    User.findOne({$or: [{email: username},{phone:username},{prid:username}]})
-    .then((user: any) =>{
+    const user = await User.findOne({$or: [{email: username},{phone:username},{prid:username}]})
+    
+//.....................................................................
+    // const userID = user?._id;
+    // const exist = await Sesssion.findOne({userID: user._id})
+//.....................................................................
+
         if(user){
-            bcrypt.compare(password, user.password, function(err:any,result:any){
+            bcrypt.compare(password, user.password, async function(err:any,result:any){
                 if(err){
                     res.json({
                         error: err
@@ -69,6 +87,14 @@ const login = (req:any, res:any, next:any) =>{
                 }
                 if(result){
                     let token = jwt.sign({email: user.email, id:user._id}, SEC_KEY, {expiresIn: '1h'})
+//.................................................................................................................
+                    const session = await Session.create({
+                        userID : user._id,
+                        isActive : true,
+                        deviceID: req.body.deviceID        
+                    })
+
+//.................................................................................................................
                     res.status(201).json({
                         message : 'login successfull !!',
                         user: user,
@@ -85,7 +111,6 @@ const login = (req:any, res:any, next:any) =>{
                 message: 'No user found'
             })
         }
-    })
 }
 
 
